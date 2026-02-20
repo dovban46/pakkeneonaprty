@@ -1,0 +1,248 @@
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
+.btn-neon {
+    background: linear-gradient(135deg, #ff2d95, #b026ff);
+    color: white;
+    transition: all 0.2s;
+}
+.btn-neon:hover {
+    opacity: 0.85;
+    box-shadow: 0 0 20px rgba(255, 45, 149, 0.3);
+}
+
+.nav-btn {
+    color: #6b7280;
+    transition: color 0.2s;
+    position: relative;
+    min-width: 44px;
+}
+.nav-btn.active {
+    color: #00d4ff;
+}
+.nav-btn.active::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 24px;
+    height: 2px;
+    background: #00d4ff;
+    border-radius: 0 0 2px 2px;
+}
+
+.stat-card {
+    transition: transform 0.15s;
+}
+.stat-card:active {
+    transform: scale(0.97);
+}
+
+input[type="text"], input[type="number"], input[type="date"], select, textarea {
+    background-color: #1a1a25;
+    color: #f3f4f6;
+}
+
+.check-item {
+    transition: background-color 0.15s;
+}
+.check-item:active {
+    background-color: #222230;
+}
+.check-item.checked {
+    opacity: 0.6;
+}
+.check-item.checked .item-name {
+    text-decoration: line-through;
+}
+
+.barcode-container {
+    background: white;
+    padding: 8px;
+    border-radius: 8px;
+    display: inline-block;
+}
+.barcode-container svg {
+    display: block;
+}
+
+.toast {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: #222230;
+    border: 1px solid #333;
+    color: #f3f4f6;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-size: 14px;
+    z-index: 100;
+    opacity: 0;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    white-space: nowrap;
+}
+.toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+.toast.success {
+    border-color: #39ff14;
+    color: #39ff14;
+}
+.toast.error {
+    border-color: #ff2d95;
+    color: #ff2d95;
+}
+
+/* A6 Label Print Styles: 105mm x 148mm */
+@media print {
+    body * {
+        visibility: hidden !important;
+    }
+    #print-area,
+    #print-area * {
+        visibility: visible !important;
+    }
+    #print-area {
+        position: fixed;
+        top: 0;
+        left: 0;
+        display: block !important;
+    }
+
+    .label-a6 {
+        width: 105mm;
+        height: 148mm;
+        padding: 8mm;
+        box-sizing: border-box;
+        page-break-after: always;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        background: white;
+        color: black;
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+    }
+    .label-a6 .label-title {
+        font-size: 16pt;
+        font-weight: bold;
+        margin-bottom: 4mm;
+        text-align: center;
+        width: 100%;
+    }
+    .label-a6 .label-subtitle {
+        font-size: 10pt;
+        color: #555;
+        margin-bottom: 3mm;
+        text-align: center;
+    }
+    .label-a6 .label-barcode {
+        margin: 4mm 0;
+    }
+    .label-a6 .label-barcode svg {
+        max-width: 80mm;
+        height: auto;
+    }
+    .label-a6 .label-info {
+        font-size: 9pt;
+        color: #333;
+        text-align: center;
+        margin-top: 2mm;
+    }
+    .label-a6 .label-contents {
+        width: 100%;
+        margin-top: 4mm;
+        font-size: 8pt;
+        border-top: 0.5pt solid #ccc;
+        padding-top: 2mm;
+    }
+    .label-a6 .label-contents li {
+        padding: 1mm 0;
+        border-bottom: 0.5pt solid #eee;
+        list-style: none;
+    }
+    .label-a6 .label-qty {
+        font-weight: bold;
+    }
+
+    @page {
+        size: 105mm 148mm;
+        margin: 0;
+    }
+}
+
+/* On-screen label preview */
+.label-preview {
+    width: 105mm;
+    min-height: 148mm;
+    padding: 8mm;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    background: white;
+    color: black;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    border-radius: 8px;
+    margin: 0 auto;
+}
+.label-preview .label-title {
+    font-size: 16pt;
+    font-weight: bold;
+    margin-bottom: 4mm;
+    text-align: center;
+    width: 100%;
+}
+.label-preview .label-subtitle {
+    font-size: 10pt;
+    color: #555;
+    margin-bottom: 3mm;
+    text-align: center;
+}
+.label-preview .label-barcode {
+    margin: 4mm 0;
+}
+.label-preview .label-barcode svg {
+    max-width: 80mm;
+    height: auto;
+}
+.label-preview .label-info {
+    font-size: 9pt;
+    color: #333;
+    text-align: center;
+    margin-top: 2mm;
+}
+.label-preview .label-contents {
+    width: 100%;
+    margin-top: 4mm;
+    font-size: 8pt;
+    border-top: 0.5pt solid #ccc;
+    padding-top: 2mm;
+}
+.label-preview .label-contents li {
+    padding: 1mm 0;
+    border-bottom: 0.5pt solid #eee;
+    list-style: none;
+}
+
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+.slide-up-enter {
+    animation: slideUp 0.25s ease-out;
+}
+@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
