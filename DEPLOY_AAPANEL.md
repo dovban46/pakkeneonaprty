@@ -4,7 +4,7 @@
 
 ```bash
 cd /www/wwwroot
-git clone https://github.com/oyvindpriibe-rgb/pakkeneonaprty.git neonparty
+git clone https://github.com/dovban46/pakkeneonaprty.git neonparty
 cd neonparty
 git checkout <your-branch-name>
 ```
