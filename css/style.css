@@ -108,10 +108,22 @@ input[type="text"], input[type="number"], input[type="date"], select, textarea {
         visibility: visible !important;
     }
     #print-area {
-        position: fixed;
+        position: absolute;
         top: 0;
         left: 0;
+        width: 100%;
         display: block !important;
+    }
+
+    #view-contract-preview,
+    #view-contract-preview * {
+        visibility: visible !important;
+    }
+    #view-contract-preview {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
     }
 
     .label-a6 {
@@ -171,8 +183,25 @@ input[type="text"], input[type="number"], input[type="date"], select, textarea {
     }
 
     @page {
-        size: 105mm 148mm;
-        margin: 0;
+        size: A4;
+        margin: 10mm;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+
+    .contract-page {
+        page-break-after: always;
+        border-radius: 0;
+        padding: 0;
+        box-shadow: none;
+    }
+
+    /* A6 label uses @page override via print-area context */
+    #print-area .label-a6 {
+        width: 105mm;
+        height: 148mm;
     }
 }
 
@@ -231,6 +260,36 @@ input[type="text"], input[type="number"], input[type="date"], select, textarea {
     list-style: none;
 }
 
+/* Contract preview styles */
+.contract-page {
+    background: white;
+    color: #1a1a1a;
+    padding: 8mm;
+    border-radius: 8px;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 11pt;
+    line-height: 1.5;
+    max-width: 210mm;
+    margin: 0 auto;
+}
+
+.contract-page table {
+    border-collapse: collapse;
+}
+
+.contract-page table td {
+    vertical-align: top;
+}
+
+.contract-terms {
+    font-size: 8.5pt;
+    line-height: 1.6;
+}
+
+.no-print {
+    /* no-op on screen */
+}
+
 .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -245,4 +304,98 @@ input[type="text"], input[type="number"], input[type="date"], select, textarea {
 @keyframes slideUp {
     from { transform: translateY(20px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
+}
+
+.packing-tab, .sales-tab {
+    color: #6b7280;
+    background: transparent;
+}
+.packing-tab.active, .sales-tab.active {
+    color: #00d4ff;
+    background: #1a1a25;
+}
+
+.photo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 8px;
+}
+.photo-grid img {
+    width: 100%;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 2px solid #222230;
+    transition: border-color 0.2s;
+}
+.photo-grid img:hover {
+    border-color: #00d4ff;
+}
+
+.photo-capture-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 4/3;
+    border: 2px dashed #333;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #6b7280;
+    transition: all 0.2s;
+    background: #12121a;
+}
+.photo-capture-btn:hover {
+    border-color: #00d4ff;
+    color: #00d4ff;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 16px;
+    color: #0a0a0f;
+    flex-shrink: 0;
+}
+
+.checkin-step {
+    opacity: 0.4;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+.checkin-step.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 10px;
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.photo-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: rgba(0,0,0,0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+.photo-lightbox img {
+    max-width: 95vw;
+    max-height: 90vh;
+    object-fit: contain;
+    border-radius: 8px;
 }

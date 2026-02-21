@@ -39,9 +39,14 @@
                 <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-neon-pink to-neon-blue flex items-center justify-center font-bold text-sm">NP</div>
                 <h1 class="text-lg font-bold bg-gradient-to-r from-neon-pink to-neon-blue bg-clip-text text-transparent">Neonparty Pakking</h1>
             </div>
-            <button id="btn-scanner-quick" class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors" title="Hurtigskann">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
-            </button>
+            <div class="flex items-center gap-2">
+                <a href="register.html" target="_blank" class="p-2 rounded-lg bg-neon-green/20 hover:bg-neon-green/30 transition-colors border border-neon-green/30" title="Registreringsskjema">
+                    <svg class="w-5 h-5 text-neon-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                </a>
+                <button id="btn-scanner-quick" class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors" title="Hurtigskann">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
+                </button>
+            </div>
         </header>
 
         <!-- Main Content -->
@@ -55,22 +60,51 @@
                         <span class="text-sm text-neon-yellow font-medium" id="dashboard-service-text"></span>
                     </div>
                 </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="stat-card bg-dark-800 rounded-xl p-4 border border-dark-600">
+                <!-- Active user indicator -->
+                <div id="dashboard-user-indicator" class="hidden bg-dark-800 rounded-xl p-3 border border-neon-blue/30 cursor-pointer hover:bg-dark-700 transition-colors" onclick="showView('crew')"></div>
+
+                <!-- New inquiry alert -->
+                <div id="dashboard-inquiry-alert" class="hidden bg-neon-yellow/10 border border-neon-yellow/30 rounded-xl p-3 cursor-pointer hover:bg-neon-yellow/15 transition-colors" onclick="App.salesTab='inquiries'; showView('sales')">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-5 h-5 text-neon-yellow shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/></svg>
+                        <span class="text-sm text-neon-yellow font-medium" id="dashboard-inquiry-text"></span>
+                    </div>
+                </div>
+
+                <!-- Active event alert -->
+                <div id="dashboard-event-alert" class="hidden bg-neon-green/10 border border-neon-green/30 rounded-xl p-3 cursor-pointer hover:bg-neon-green/15 transition-colors" onclick="showView('events')">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-5 h-5 text-neon-green shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        <span class="text-sm text-neon-green font-medium" id="dashboard-event-text"></span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="stat-card bg-dark-800 rounded-xl p-4 border border-dark-600 cursor-pointer" onclick="showView('packing')">
                         <div class="text-2xl font-bold text-neon-blue" id="stat-products">0</div>
                         <div class="text-sm text-gray-400">Produkter</div>
                     </div>
-                    <div class="stat-card bg-dark-800 rounded-xl p-4 border border-dark-600">
-                        <div class="text-2xl font-bold text-neon-green" id="stat-lists">0</div>
-                        <div class="text-sm text-gray-400">Pakkelister</div>
+                    <div class="stat-card bg-dark-800 rounded-xl p-4 border border-dark-600 cursor-pointer" onclick="showView('events')">
+                        <div class="text-2xl font-bold text-neon-green" id="stat-events">0</div>
+                        <div class="text-sm text-gray-400">Events</div>
                     </div>
-                    <div class="stat-card bg-dark-800 rounded-xl p-4 border border-dark-600">
-                        <div class="text-2xl font-bold text-neon-yellow" id="stat-boxes">0</div>
-                        <div class="text-sm text-gray-400">Bokser</div>
+                    <div class="stat-card bg-dark-800 rounded-xl p-4 border border-dark-600 cursor-pointer" onclick="showView('crew')">
+                        <div class="text-2xl font-bold text-neon-purple" id="stat-crew">0</div>
+                        <div class="text-sm text-gray-400">Crew</div>
                     </div>
-                    <div class="stat-card bg-dark-800 rounded-xl p-4 border border-dark-600">
+                </div>
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="stat-card bg-dark-800 rounded-xl p-4 border border-dark-600 cursor-pointer" onclick="showView('sales')">
+                        <div class="text-2xl font-bold text-neon-yellow" id="stat-contracts">0</div>
+                        <div class="text-sm text-gray-400">Salg</div>
+                    </div>
+                    <div class="stat-card bg-dark-800 rounded-xl p-4 border border-dark-600 cursor-pointer" onclick="showView('vehicle')">
                         <div class="text-2xl font-bold text-neon-pink" id="stat-vehicle">0</div>
                         <div class="text-sm text-gray-400">I bilen</div>
+                    </div>
+                    <div class="stat-card bg-dark-800 rounded-xl p-4 border border-dark-600 cursor-pointer" onclick="showView('service')">
+                        <div class="text-2xl font-bold text-neon-yellow" id="stat-issues">0</div>
+                        <div class="text-sm text-gray-400">Åpne feil</div>
                     </div>
                 </div>
 
@@ -82,25 +116,40 @@
                 </div>
             </div>
 
-            <!-- Products View -->
-            <div id="view-products" class="view hidden p-4 space-y-4">
-                <div class="flex items-center justify-between">
-                    <h2 class="text-xl font-bold">Produkter</h2>
-                    <button id="btn-add-product" class="btn-neon px-4 py-2 rounded-lg text-sm font-semibold">+ Nytt produkt</button>
+            <!-- Packing View (combined Products, Lists, Boxes) -->
+            <div id="view-packing" class="view hidden p-4 space-y-4">
+                <div class="flex items-center justify-between mb-2">
+                    <h2 class="text-xl font-bold">Pakking</h2>
                 </div>
-                <div class="relative">
-                    <input type="text" id="search-products" placeholder="Søk produkter..." class="w-full bg-dark-700 border border-dark-600 rounded-lg px-4 py-2 text-sm focus:border-neon-blue focus:outline-none">
+                <div class="flex gap-1 bg-dark-800 rounded-xl p-1 border border-dark-600">
+                    <button class="packing-tab flex-1 py-2 text-sm rounded-lg font-medium transition-colors active" data-packing-tab="products">Produkter</button>
+                    <button class="packing-tab flex-1 py-2 text-sm rounded-lg font-medium transition-colors" data-packing-tab="lists">Lister</button>
+                    <button class="packing-tab flex-1 py-2 text-sm rounded-lg font-medium transition-colors" data-packing-tab="boxes">Bokser</button>
                 </div>
-                <div id="products-list" class="space-y-3"></div>
-            </div>
-
-            <!-- Packing Lists View -->
-            <div id="view-lists" class="view hidden p-4 space-y-4">
-                <div class="flex items-center justify-between">
-                    <h2 class="text-xl font-bold">Pakkelister</h2>
-                    <button id="btn-add-list" class="btn-neon px-4 py-2 rounded-lg text-sm font-semibold">+ Ny liste</button>
+                <!-- Products sub-tab -->
+                <div id="packing-tab-products" class="packing-tab-content space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div class="relative flex-1 mr-3">
+                            <input type="text" id="search-products" placeholder="Søk produkter..." class="w-full bg-dark-700 border border-dark-600 rounded-lg px-4 py-2 text-sm focus:border-neon-blue focus:outline-none">
+                        </div>
+                        <button id="btn-add-product" class="btn-neon px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap">+ Nytt</button>
+                    </div>
+                    <div id="products-list" class="space-y-3"></div>
                 </div>
-                <div id="packing-lists" class="space-y-3"></div>
+                <!-- Lists sub-tab -->
+                <div id="packing-tab-lists" class="packing-tab-content hidden space-y-4">
+                    <div class="flex items-center justify-end">
+                        <button id="btn-add-list" class="btn-neon px-4 py-2 rounded-lg text-sm font-semibold">+ Ny liste</button>
+                    </div>
+                    <div id="packing-lists" class="space-y-3"></div>
+                </div>
+                <!-- Boxes sub-tab -->
+                <div id="packing-tab-boxes" class="packing-tab-content hidden space-y-4">
+                    <div class="flex items-center justify-end">
+                        <button id="btn-add-box" class="btn-neon px-4 py-2 rounded-lg text-sm font-semibold">+ Ny boks</button>
+                    </div>
+                    <div id="boxes-list" class="space-y-3"></div>
+                </div>
             </div>
 
             <!-- Packing List Detail View -->
@@ -126,15 +175,6 @@
                 <div id="list-items" class="space-y-2"></div>
             </div>
 
-            <!-- Boxes View -->
-            <div id="view-boxes" class="view hidden p-4 space-y-4">
-                <div class="flex items-center justify-between">
-                    <h2 class="text-xl font-bold">Bokser</h2>
-                    <button id="btn-add-box" class="btn-neon px-4 py-2 rounded-lg text-sm font-semibold">+ Ny boks</button>
-                </div>
-                <div id="boxes-list" class="space-y-3"></div>
-            </div>
-
             <!-- Box Detail View -->
             <div id="view-box-detail" class="view hidden p-4 space-y-4">
                 <button id="btn-back-boxes" class="text-neon-blue text-sm flex items-center gap-1 mb-2">
@@ -151,6 +191,43 @@
                 <div id="box-items" class="space-y-2"></div>
             </div>
 
+            <!-- Events View -->
+            <div id="view-events" class="view hidden p-4 space-y-4">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xl font-bold">Arrangementer</h2>
+                    <button id="btn-add-event" class="btn-neon px-4 py-2 rounded-lg text-sm font-semibold">+ Nytt</button>
+                </div>
+                <div id="events-list" class="space-y-4"></div>
+            </div>
+
+            <!-- Event Detail View -->
+            <div id="view-event-detail" class="view hidden p-4 space-y-4">
+                <button id="btn-back-events" class="text-neon-blue text-sm flex items-center gap-1 mb-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    Tilbake
+                </button>
+                <div id="event-detail-content" class="space-y-4"></div>
+            </div>
+
+            <!-- Check-in View -->
+            <div id="view-checkin" class="view hidden p-4 space-y-4">
+                <button id="btn-back-checkin" class="text-neon-blue text-sm flex items-center gap-1 mb-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    Tilbake
+                </button>
+                <div id="checkin-content" class="space-y-4"></div>
+            </div>
+
+            <!-- Crew View -->
+            <div id="view-crew" class="view hidden p-4 space-y-4">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xl font-bold">Crew</h2>
+                    <button id="btn-add-user" class="btn-neon px-4 py-2 rounded-lg text-sm font-semibold">+ Ny bruker</button>
+                </div>
+                <div id="active-user-indicator" class="bg-dark-800 rounded-xl p-3 border border-neon-blue/30"></div>
+                <div id="crew-list" class="space-y-3"></div>
+            </div>
+
             <!-- Vehicle View -->
             <div id="view-vehicle" class="view hidden p-4 space-y-4">
                 <div class="flex items-center justify-between">
@@ -159,6 +236,15 @@
                 </div>
                 <div id="vehicle-selector" class="flex gap-2 overflow-x-auto pb-1 scrollbar-hide"></div>
                 <div id="vehicle-active-content" class="space-y-4"></div>
+            </div>
+
+            <!-- Vehicle Profile View -->
+            <div id="view-vehicle-profile" class="view hidden p-4 space-y-4">
+                <button id="btn-back-vehicle-profile" class="text-neon-blue text-sm flex items-center gap-1 mb-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    Tilbake til biler
+                </button>
+                <div id="vehicle-profile-content"></div>
             </div>
 
             <!-- Vehicle Load from List View -->
@@ -188,6 +274,124 @@
                     </div>
                 </div>
                 <div id="service-list" class="space-y-4"></div>
+            </div>
+
+            <!-- Sales View (Forespørsler, Tilbud, Kontrakter, Kunder, Venues) -->
+            <div id="view-sales" class="view hidden p-4 space-y-4">
+                <div class="flex items-center justify-between mb-2">
+                    <h2 class="text-xl font-bold">Salg</h2>
+                </div>
+                <div class="flex gap-1 bg-dark-800 rounded-xl p-1 border border-dark-600 overflow-x-auto scrollbar-hide">
+                    <button class="sales-tab flex-1 py-2 text-xs rounded-lg font-medium transition-colors whitespace-nowrap px-2 relative" data-sales-tab="inquiries">Forespørsler<span id="inquiry-badge" class="hidden absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-neon-green border-2 border-dark-800"></span></button>
+                    <button class="sales-tab flex-1 py-2 text-xs rounded-lg font-medium transition-colors whitespace-nowrap px-2" data-sales-tab="offers">Tilbud</button>
+                    <button class="sales-tab flex-1 py-2 text-xs rounded-lg font-medium transition-colors whitespace-nowrap px-2 active" data-sales-tab="contracts">Kontrakter</button>
+                    <button class="sales-tab flex-1 py-2 text-xs rounded-lg font-medium transition-colors whitespace-nowrap px-2" data-sales-tab="customers">Kunder</button>
+                    <button class="sales-tab flex-1 py-2 text-xs rounded-lg font-medium transition-colors whitespace-nowrap px-2" data-sales-tab="venues">Venues</button>
+                </div>
+                <!-- Inquiries sub-tab -->
+                <div id="sales-tab-inquiries" class="sales-tab-content hidden space-y-4">
+                    <div id="inquiries-list" class="space-y-3"></div>
+                </div>
+                <!-- Offers sub-tab -->
+                <div id="sales-tab-offers" class="sales-tab-content hidden space-y-4">
+                    <div class="flex items-center justify-end">
+                        <button onclick="showNewOfferForm()" class="btn-neon px-4 py-2 rounded-lg text-sm font-semibold">+ Nytt tilbud</button>
+                    </div>
+                    <div id="offers-list" class="space-y-3"></div>
+                </div>
+                <!-- Contracts sub-tab -->
+                <div id="sales-tab-contracts" class="sales-tab-content space-y-4">
+                    <div class="flex items-center justify-end">
+                        <button id="btn-add-contract" class="btn-neon px-4 py-2 rounded-lg text-sm font-semibold">+ Ny kontrakt</button>
+                    </div>
+                    <div id="contracts-list" class="space-y-3"></div>
+                </div>
+                <!-- Customers sub-tab -->
+                <div id="sales-tab-customers" class="sales-tab-content hidden space-y-4">
+                    <div class="flex items-center justify-end">
+                        <button id="btn-add-customer" class="btn-neon px-4 py-2 rounded-lg text-sm font-semibold">+ Ny kunde</button>
+                    </div>
+                    <div id="customers-list" class="space-y-3"></div>
+                </div>
+                <!-- Venues sub-tab -->
+                <div id="sales-tab-venues" class="sales-tab-content hidden space-y-4">
+                    <div class="flex items-center justify-end">
+                        <button id="btn-add-venue" class="btn-neon px-4 py-2 rounded-lg text-sm font-semibold">+ Ny venue</button>
+                    </div>
+                    <div id="venues-list" class="space-y-3"></div>
+                </div>
+            </div>
+
+            <!-- Inquiry Detail View -->
+            <div id="view-inquiry-detail" class="view hidden p-4 space-y-4">
+                <button id="btn-back-inquiries" class="text-neon-blue text-sm flex items-center gap-1 mb-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    Tilbake
+                </button>
+                <div id="inquiry-detail-content" class="space-y-4"></div>
+            </div>
+
+            <!-- Offer Editor View -->
+            <div id="view-offer-editor" class="view hidden p-4 space-y-4">
+                <button id="btn-back-offers" class="text-neon-blue text-sm flex items-center gap-1 mb-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    Tilbake
+                </button>
+                <div id="offer-editor-content" class="space-y-4"></div>
+            </div>
+
+            <!-- Offer Preview View -->
+            <div id="view-offer-preview" class="view hidden p-4 space-y-4">
+                <button id="btn-back-offer-detail" class="text-neon-blue text-sm flex items-center gap-1 mb-2 no-print">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    Tilbake
+                </button>
+                <div id="offer-preview-content" class="space-y-4"></div>
+            </div>
+
+            <!-- Customer Detail View -->
+            <div id="view-customer-detail" class="view hidden p-4 space-y-4">
+                <button id="btn-back-customers" class="text-neon-blue text-sm flex items-center gap-1 mb-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    Tilbake
+                </button>
+                <div id="customer-detail-content" class="space-y-4"></div>
+            </div>
+
+            <!-- Venue Detail View -->
+            <div id="view-venue-detail" class="view hidden p-4 space-y-4">
+                <button id="btn-back-venues" class="text-neon-blue text-sm flex items-center gap-1 mb-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    Tilbake
+                </button>
+                <div id="venue-detail-content" class="space-y-4"></div>
+            </div>
+
+            <!-- Contract Detail View -->
+            <div id="view-contract-detail" class="view hidden p-4 space-y-4">
+                <button id="btn-back-contracts" class="text-neon-blue text-sm flex items-center gap-1 mb-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    Tilbake
+                </button>
+                <div id="contract-detail-content" class="space-y-3"></div>
+            </div>
+
+            <!-- Contract Preview View -->
+            <div id="view-contract-preview" class="view hidden p-4 space-y-4">
+                <button id="btn-back-contract-detail" class="text-neon-blue text-sm flex items-center gap-1 mb-2 no-print">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    Tilbake
+                </button>
+                <div id="contract-preview-content" class="space-y-4"></div>
+            </div>
+
+            <!-- Vehicle Trip View -->
+            <div id="view-vehicle-trip" class="view hidden p-4 space-y-4">
+                <button id="btn-back-vehicle-trip" class="text-neon-blue text-sm flex items-center gap-1 mb-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    Tilbake til bil
+                </button>
+                <div id="vehicle-trip-content" class="space-y-3"></div>
             </div>
 
             <!-- Scanner View -->
@@ -222,21 +426,26 @@
                     <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                     Hjem
                 </button>
-                <button class="nav-btn flex flex-col items-center py-2 px-1.5 text-xs" data-view="products">
+                <button class="nav-btn flex flex-col items-center py-2 px-1.5 text-xs" data-view="packing">
                     <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
-                    Produkter
-                </button>
-                <button class="nav-btn flex flex-col items-center py-2 px-1.5 text-xs" data-view="lists">
-                    <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
-                    Lister
-                </button>
-                <button class="nav-btn flex flex-col items-center py-2 px-1.5 text-xs" data-view="boxes">
-                    <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
-                    Bokser
+                    Pakking
                 </button>
                 <button class="nav-btn flex flex-col items-center py-2 px-1.5 text-xs" data-view="vehicle">
                     <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 17h.01M16 17h.01M3 11l1.5-5A2 2 0 016.4 4h11.2a2 2 0 011.9 1.4L21 11M3 11h18M3 11v6a1 1 0 001 1h1m14 0h1a1 1 0 001-1v-6"/></svg>
                     Bil
+                </button>
+                <button class="nav-btn flex flex-col items-center py-2 px-1.5 text-xs relative" data-view="events">
+                    <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    Event
+                    <span id="event-badge" class="hidden absolute top-0.5 right-0.5 w-2.5 h-2.5 rounded-full bg-neon-green border-2 border-dark-800"></span>
+                </button>
+                <button class="nav-btn flex flex-col items-center py-2 px-1.5 text-xs" data-view="crew">
+                    <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    Crew
+                </button>
+                <button class="nav-btn flex flex-col items-center py-2 px-1.5 text-xs" data-view="sales">
+                    <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    Salg
                 </button>
                 <button class="nav-btn flex flex-col items-center py-2 px-1.5 text-xs relative" data-view="service">
                     <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -264,6 +473,8 @@
     <div id="print-area" class="hidden print:block"></div>
 
     <script src="js/db.js"></script>
+    <script src="js/photodb.js"></script>
     <script src="js/app.js"></script>
+    <script src="js/contracts.js"></script>
 </body>
 </html>

@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forespørsel — Neonparty</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        neon: { pink: '#ff2d95', blue: '#00d4ff', green: '#39ff14', yellow: '#fff01f', purple: '#b026ff' },
+                        dark: { 900: '#0a0a0f', 800: '#12121a', 700: '#1a1a25', 600: '#222230' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        .step { display: none; }
+        .step.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        .progress-dot { width: 10px; height: 10px; border-radius: 50%; background: #222230; transition: all 0.3s; }
+        .progress-dot.active { background: #00d4ff; box-shadow: 0 0 8px #00d4ff40; }
+        .progress-dot.done { background: #39ff14; }
+        .field-input { width: 100%; background: #1a1a25; border: 1px solid #222230; border-radius: 0.5rem; padding: 0.625rem 0.75rem; font-size: 0.875rem; color: #f3f4f6; outline: none; transition: border-color 0.2s; }
+        .field-input:focus { border-color: #00d4ff; }
+        .field-input::placeholder { color: #6b7280; }
+        textarea.field-input { resize: vertical; min-height: 70px; }
+        .btn-primary { background: linear-gradient(135deg, #ff2d95, #00d4ff); color: #fff; font-weight: 600; padding: 0.75rem 1.5rem; border-radius: 0.75rem; border: none; cursor: pointer; font-size: 0.875rem; transition: opacity 0.2s; width: 100%; }
+        .btn-primary:hover { opacity: 0.9; }
+        .btn-secondary { background: #1a1a25; color: #d1d5db; font-weight: 500; padding: 0.625rem 1.25rem; border-radius: 0.75rem; border: 1px solid #222230; cursor: pointer; font-size: 0.875rem; transition: background 0.2s; }
+        .btn-secondary:hover { background: #222230; }
+        .brreg-result { padding: 0.5rem 0.75rem; cursor: pointer; border-bottom: 1px solid #222230; transition: background 0.15s; }
+        .brreg-result:hover { background: #222230; }
+        .brreg-result:last-child { border-bottom: none; }
+        .extra-event { background: #1a1a25; border: 1px solid #222230; border-radius: 0.75rem; padding: 1rem; position: relative; }
+        .summary-row { display: flex; justify-content: space-between; padding: 0.375rem 0; border-bottom: 1px solid #222230; }
+        .summary-row:last-child { border-bottom: none; }
+        .summary-label { color: #9ca3af; font-size: 0.8rem; }
+        .summary-value { color: #f3f4f6; font-size: 0.875rem; font-weight: 500; text-align: right; max-width: 60%; }
+    </style>
+</head>
+<body class="bg-dark-900 text-gray-100 min-h-screen flex flex-col">
+    <header class="bg-dark-800 border-b border-dark-600 px-4 py-3 text-center">
+        <div class="flex items-center justify-center gap-2">
+            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-neon-pink to-neon-blue flex items-center justify-center font-bold text-sm">NP</div>
+            <h1 class="text-lg font-bold bg-gradient-to-r from-neon-pink to-neon-blue bg-clip-text text-transparent">Neonparty</h1>
+        </div>
+        <p class="text-xs text-gray-400 mt-1">Send oss en forespørsel</p>
+    </header>
+
+    <main class="flex-1 max-w-lg mx-auto w-full px-4 py-6">
+        <!-- Progress -->
+        <div class="flex items-center justify-center gap-3 mb-6" id="progress-dots">
+            <div class="progress-dot active" data-step="0"></div>
+            <div class="progress-dot" data-step="1"></div>
+            <div class="progress-dot" data-step="2"></div>
+            <div class="progress-dot" data-step="3"></div>
+            <div class="progress-dot" data-step="4"></div>
+            <div class="progress-dot" data-step="5"></div>
+        </div>
+
+        <!-- Step 0: Firmaopplysninger -->
+        <div class="step active" data-step="0">
+            <h2 class="text-xl font-bold mb-1">Firmaopplysninger</h2>
+            <p class="text-sm text-gray-400 mb-5">Fortell oss om firmaet eller deg selv</p>
+
+            <div class="mb-4">
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" id="reg-private" class="w-4 h-4 rounded border-dark-600 bg-dark-700 accent-[#b026ff]">
+                    <span class="text-sm text-gray-300">Jeg er privatperson</span>
+                </label>
+            </div>
+
+            <div id="reg-company-fields" class="space-y-3">
+                <div class="relative">
+                    <label class="block text-sm text-gray-400 mb-1">Søk firma</label>
+                    <input type="text" id="reg-brreg" placeholder="Søk etter firmanavn eller org.nr..." class="field-input">
+                    <div id="reg-brreg-results" class="absolute z-50 left-0 right-0 top-full mt-1 bg-dark-700 border border-dark-600 rounded-lg max-h-48 overflow-y-auto hidden"></div>
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-400 mb-1">Firmanavn *</label>
+                    <input type="text" id="reg-company" class="field-input" placeholder="Firmanavn">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">Org.nr</label>
+                        <input type="text" id="reg-orgnum" class="field-input" placeholder="123 456 789">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">Org.form</label>
+                        <input type="text" id="reg-orgform" class="field-input" readonly placeholder="Fylles automatisk">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-400 mb-1">Adresse</label>
+                    <input type="text" id="reg-address" class="field-input" placeholder="Gateadresse, postnr poststed">
+                </div>
+            </div>
+
+            <div id="reg-private-fields" class="hidden space-y-3">
+                <div>
+                    <label class="block text-sm text-gray-400 mb-1">Fullt navn *</label>
+                    <input type="text" id="reg-private-name" class="field-input" placeholder="Ditt fulle navn">
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-400 mb-1">Adresse</label>
+                    <input type="text" id="reg-private-address" class="field-input" placeholder="Adresse">
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <button class="btn-primary" onclick="nextStep()">Neste</button>
+            </div>
+        </div>
+
+        <!-- Step 1: Kontaktperson -->
+        <div class="step" data-step="1">
+            <h2 class="text-xl font-bold mb-1">Kontaktperson</h2>
+            <p class="text-sm text-gray-400 mb-5">Hvem skal vi kontakte?</p>
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-sm text-gray-400 mb-1">Navn *</label>
+                    <input type="text" id="reg-contact-name" class="field-input" placeholder="Fullt navn">
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-400 mb-1">Telefon *</label>
+                    <input type="tel" id="reg-contact-phone" class="field-input" placeholder="Telefonnummer">
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-400 mb-1">E-post *</label>
+                    <input type="email" id="reg-contact-email" class="field-input" placeholder="din@epost.no">
+                </div>
+            </div>
+            <div class="flex gap-3 mt-6">
+                <button class="btn-secondary flex-1" onclick="prevStep()">Tilbake</button>
+                <button class="btn-primary flex-1" onclick="nextStep()">Neste</button>
+            </div>
+        </div>
+
+        <!-- Step 2: Ønsket dato -->
+        <div class="step" data-step="2">
+            <h2 class="text-xl font-bold mb-1">Ønsket dato</h2>
+            <p class="text-sm text-gray-400 mb-5">Når ønsker dere arrangement?</p>
+            <div class="space-y-3">
+                <div>
+                    <label class="flex items-center gap-2 cursor-pointer mb-3">
+                        <input type="checkbox" id="reg-date-flexible" class="w-4 h-4 rounded border-dark-600 bg-dark-700 accent-[#00d4ff]">
+                        <span class="text-sm text-gray-300">Dato er ikke bestemt ennå</span>
+                    </label>
+                </div>
+                <div id="reg-date-fields">
+                    <label class="block text-sm text-gray-400 mb-1">Dato</label>
+                    <input type="date" id="reg-date" class="field-input">
+                    <div class="grid grid-cols-2 gap-3 mt-3">
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-1">Starttidspunkt</label>
+                            <input type="time" id="reg-time" class="field-input">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-1">Sluttidspunkt</label>
+                            <input type="time" id="reg-time-end" class="field-input">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex gap-3 mt-6">
+                <button class="btn-secondary flex-1" onclick="prevStep()">Tilbake</button>
+                <button class="btn-primary flex-1" onclick="nextStep()">Neste</button>
+            </div>
+        </div>
+
+        <!-- Step 3: Venue og målgruppe -->
+        <div class="step" data-step="3">
+            <h2 class="text-xl font-bold mb-1">Om arrangementet</h2>
+            <p class="text-sm text-gray-400 mb-5">Fortell oss om lokalet og målgruppen</p>
+            <div class="space-y-3">
+                <div class="relative">
+                    <label class="block text-sm text-gray-400 mb-1">Adresse til lokalet</label>
+                    <input type="text" id="reg-venue-address" class="field-input" placeholder="Søk etter adresse..." autocomplete="off">
+                    <div id="reg-address-results" class="absolute z-50 left-0 right-0 top-full mt-1 bg-dark-700 border border-dark-600 rounded-lg max-h-48 overflow-y-auto hidden"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">Ca. størrelse på lokalet</label>
+                        <input type="number" id="reg-venue-size" class="field-input" placeholder="m²" min="0">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">Forventet antall gjester</label>
+                        <input type="number" id="reg-guests" class="field-input" placeholder="Ca. antall">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-400 mb-1">Om lokalet / venue</label>
+                    <textarea id="reg-venue" class="field-input" placeholder="Beskriv lokalet: type, fasiliteter..."></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-400 mb-1">Målgruppe</label>
+                    <textarea id="reg-audience" class="field-input" placeholder="Hvem er målgruppen? Alder, type arrangement..."></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-400 mb-1">Ønsker / spesielle behov</label>
+                    <textarea id="reg-wishes" class="field-input" placeholder="Eventuelle ønsker for arrangementet..."></textarea>
+                </div>
+            </div>
+            <div class="flex gap-3 mt-6">
+                <button class="btn-secondary flex-1" onclick="prevStep()">Tilbake</button>
+                <button class="btn-primary flex-1" onclick="nextStep()">Neste</button>
+            </div>
+        </div>
+
+        <!-- Step 4: Ekstra arrangementer -->
+        <div class="step" data-step="4">
+            <h2 class="text-xl font-bold mb-1">Ekstra arrangementer</h2>
+            <p class="text-sm text-gray-400 mb-5">Ønsker dere flere arrangementer i samme forespørsel?</p>
+            <div id="extra-events-list" class="space-y-3 mb-4"></div>
+            <button class="btn-secondary w-full" onclick="addExtraEvent()">+ Legg til arrangement</button>
+            <div class="flex gap-3 mt-6">
+                <button class="btn-secondary flex-1" onclick="prevStep()">Tilbake</button>
+                <button class="btn-primary flex-1" onclick="nextStep()">Se oppsummering</button>
+            </div>
+        </div>
+
+        <!-- Step 5: Oppsummering -->
+        <div class="step" data-step="5">
+            <h2 class="text-xl font-bold mb-1">Oppsummering</h2>
+            <p class="text-sm text-gray-400 mb-5">Sjekk at alt ser riktig ut</p>
+            <div id="summary-content" class="space-y-4 mb-6"></div>
+            <div class="space-y-3">
+                <button class="btn-primary" onclick="submitForm()">Send forespørsel</button>
+                <button class="btn-secondary w-full" onclick="prevStep()">Tilbake</button>
+            </div>
+        </div>
+
+        <!-- Success -->
+        <div id="success-view" class="hidden text-center py-12">
+            <div class="w-16 h-16 rounded-full bg-neon-green/20 flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-neon-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            </div>
+            <h2 class="text-2xl font-bold mb-2">Takk for forespørselen!</h2>
+            <p class="text-gray-400 mb-6">Vi tar kontakt med deg så snart som mulig.</p>
+            <div class="space-y-3">
+                <a id="mailto-link" class="btn-primary block text-center no-underline" href="#">Send på e-post</a>
+                <button class="btn-secondary w-full" onclick="copyImportLink()">Kopier import-link</button>
+                <p id="copy-feedback" class="text-sm text-neon-green hidden">Link kopiert!</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+    let currentStep = 0;
+    const totalSteps = 6;
+    let extraEventCount = 0;
+    let _brregTimeout = null;
+    let _prefillData = null;
+
+    function checkPrefill() {
+        const params = new URLSearchParams(window.location.search);
+        const prefillParam = params.get('prefill');
+        if (!prefillParam) return;
+
+        try {
+            const json = decodeURIComponent(escape(atob(prefillParam)));
+            _prefillData = JSON.parse(json);
+        } catch { return; }
+
+        if (_prefillData.companyName) {
+            document.getElementById('reg-company').value = _prefillData.companyName;
+            document.getElementById('reg-company').readOnly = true;
+            document.getElementById('reg-company').classList.add('opacity-60');
+        }
+        if (_prefillData.orgNumber) {
+            document.getElementById('reg-orgnum').value = _prefillData.orgNumber;
+            document.getElementById('reg-orgnum').readOnly = true;
+            document.getElementById('reg-orgnum').classList.add('opacity-60');
+        }
+        if (_prefillData.orgForm) {
+            document.getElementById('reg-orgform').value = _prefillData.orgForm;
+        }
+        if (_prefillData.address) {
+            document.getElementById('reg-address').value = _prefillData.address;
+            document.getElementById('reg-address').readOnly = true;
+            document.getElementById('reg-address').classList.add('opacity-60');
+        }
+        if (_prefillData.contactEmail) {
+            document.getElementById('reg-contact-email').value = _prefillData.contactEmail;
+            document.getElementById('reg-contact-email').readOnly = true;
+            document.getElementById('reg-contact-email').classList.add('opacity-60');
+        }
+
+        document.getElementById('reg-brreg').closest('.relative').classList.add('hidden');
+        document.getElementById('reg-private').closest('label').classList.add('hidden');
+
+        const header = document.querySelector('header p');
+        if (header) header.textContent = 'Fullfør registreringen for å motta tilbud';
+    }
+
+    checkPrefill();
+
+    function updateProgress() {
+        document.querySelectorAll('.progress-dot').forEach((dot, i) => {
+            dot.classList.toggle('active', i === currentStep);
+            dot.classList.toggle('done', i < currentStep);
+        });
+    }
+
+    function showStep(n) {
+        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+        const step = document.querySelector(`.step[data-step="${n}"]`);
+        if (step) step.classList.add('active');
+        currentStep = n;
+        updateProgress();
+        if (n === 5) buildSummary();
+    }
+
+    function nextStep() {
+        if (!validateStep(currentStep)) return;
+        if (currentStep < totalSteps - 1) showStep(currentStep + 1);
+    }
+
+    function prevStep() {
+        if (currentStep > 0) showStep(currentStep - 1);
+    }
+
+    function validateStep(step) {
+        if (step === 0) {
+            const isPrivate = document.getElementById('reg-private').checked;
+            if (isPrivate) {
+                if (!document.getElementById('reg-private-name').value.trim()) { alert('Fyll inn navn'); return false; }
+            } else {
+                if (!document.getElementById('reg-company').value.trim()) { alert('Fyll inn firmanavn'); return false; }
+            }
+        }
+        if (step === 1) {
+            if (!document.getElementById('reg-contact-name').value.trim()) { alert('Fyll inn kontaktperson'); return false; }
+            if (!document.getElementById('reg-contact-phone').value.trim()) { alert('Fyll inn telefon'); return false; }
+            if (!document.getElementById('reg-contact-email').value.trim()) { alert('Fyll inn e-post'); return false; }
+        }
+        return true;
+    }
+
+    // Brønnøysund search
+    document.getElementById('reg-brreg').addEventListener('input', function() {
+        clearTimeout(_brregTimeout);
+        const q = this.value.trim();
+        const resultsDiv = document.getElementById('reg-brreg-results');
+        if (q.length < 2) { resultsDiv.classList.add('hidden'); return; }
+        _brregTimeout = setTimeout(async () => {
+            resultsDiv.innerHTML = '<div class="p-3 text-sm text-gray-400">Søker...</div>';
+            resultsDiv.classList.remove('hidden');
+            try {
+                const res = await fetch(`https://data.brreg.no/enhetsregisteret/api/enheter?navn=${encodeURIComponent(q)}&size=8`);
+                const data = await res.json();
+                const enheter = data?._embedded?.enheter || [];
+                if (!enheter.length) { resultsDiv.innerHTML = '<div class="p-3 text-sm text-gray-400">Ingen treff</div>'; return; }
+                resultsDiv.innerHTML = enheter.map(e => {
+                    const addr = e.forretningsadresse || e.postadresse || {};
+                    const addrStr = [addr.adresse?.[0], addr.postnummer, addr.poststed].filter(Boolean).join(', ');
+                    return `<div class="brreg-result" onclick="pickBrreg(this)" data-name="${esc(e.navn)}" data-org="${e.organisasjonsnummer}" data-form="${esc(e.organisasjonsform?.beskrivelse || '')}" data-addr="${esc(addrStr)}">
+                        <div class="text-sm font-medium">${esc(e.navn)}</div>
+                        <div class="text-xs text-gray-400">${e.organisasjonsnummer} — ${esc(addrStr)}</div>
+                    </div>`;
+                }).join('');
+            } catch { resultsDiv.innerHTML = '<div class="p-3 text-sm text-red-400">Feil ved søk</div>'; }
+        }, 300);
+    });
+
+    function pickBrreg(el) {
+        document.getElementById('reg-company').value = el.dataset.name || '';
+        document.getElementById('reg-orgnum').value = el.dataset.org || '';
+        document.getElementById('reg-orgform').value = el.dataset.form || '';
+        document.getElementById('reg-address').value = el.dataset.addr || '';
+        document.getElementById('reg-brreg-results').classList.add('hidden');
+        document.getElementById('reg-brreg').value = '';
+    }
+
+    // Private toggle
+    document.getElementById('reg-private').addEventListener('change', function() {
+        document.getElementById('reg-company-fields').classList.toggle('hidden', this.checked);
+        document.getElementById('reg-private-fields').classList.toggle('hidden', !this.checked);
+    });
+
+    // Date flexible toggle
+    document.getElementById('reg-date-flexible').addEventListener('change', function() {
+        document.getElementById('reg-date-fields').classList.toggle('hidden', this.checked);
+    });
+
+    // Venue address autocomplete (Kartverket / Geonorge)
+    let _addrTimeout = null;
+    document.getElementById('reg-venue-address').addEventListener('input', function() {
+        clearTimeout(_addrTimeout);
+        const q = this.value.trim();
+        const resultsDiv = document.getElementById('reg-address-results');
+        if (q.length < 3) { resultsDiv.classList.add('hidden'); return; }
+        _addrTimeout = setTimeout(async () => {
+            resultsDiv.innerHTML = '<div class="p-3 text-sm text-gray-400">Søker...</div>';
+            resultsDiv.classList.remove('hidden');
+            try {
+                const res = await fetch(`https://ws.geonorge.no/adresser/v1/sok?sok=${encodeURIComponent(q)}&treffPerSide=6&utkoordsys=4258`);
+                const data = await res.json();
+                const hits = data?.adresser || [];
+                if (!hits.length) { resultsDiv.innerHTML = '<div class="p-3 text-sm text-gray-400">Ingen treff</div>'; return; }
+                resultsDiv.innerHTML = hits.map(a => {
+                    const full = [a.adressetekst, a.postnummer, a.poststed].filter(Boolean).join(', ');
+                    return `<div class="brreg-result" onclick="pickAddress(this)" data-addr="${esc(full)}" data-kommune="${esc(a.kommunenavn || '')}">
+                        <div class="text-sm font-medium">${esc(a.adressetekst)}</div>
+                        <div class="text-xs text-gray-400">${esc(a.postnummer || '')} ${esc(a.poststed || '')} — ${esc(a.kommunenavn || '')}</div>
+                    </div>`;
+                }).join('');
+            } catch { resultsDiv.innerHTML = '<div class="p-3 text-sm text-red-400">Feil ved søk</div>'; }
+        }, 300);
+    });
+
+    function pickAddress(el) {
+        document.getElementById('reg-venue-address').value = el.dataset.addr || '';
+        document.getElementById('reg-address-results').classList.add('hidden');
+    }
+
+    function addExtraEvent() {
+        extraEventCount++;
+        const container = document.getElementById('extra-events-list');
+        const div = document.createElement('div');
+        div.className = 'extra-event';
+        div.id = `extra-event-${extraEventCount}`;
+        div.innerHTML = `
+            <button onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-gray-500 hover:text-neon-pink text-lg">&times;</button>
+            <h4 class="text-sm font-semibold text-neon-blue mb-3">Ekstra arrangement #${extraEventCount}</h4>
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">Dato</label>
+                    <input type="date" class="field-input ee-date">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">Starttidspunkt</label>
+                        <input type="time" class="field-input ee-time">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">Sluttidspunkt</label>
+                        <input type="time" class="field-input ee-time-end">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">Beskrivelse</label>
+                    <textarea class="field-input ee-desc" placeholder="Hva ønsker dere for dette arrangementet?"></textarea>
+                </div>
+            </div>
+        `;
+        container.appendChild(div);
+    }
+
+    function gatherData() {
+        const isPrivate = document.getElementById('reg-private').checked;
+        const dateFlexible = document.getElementById('reg-date-flexible').checked;
+
+        const data = {
+            type: isPrivate ? 'private' : 'company',
+            companyName: isPrivate ? '' : document.getElementById('reg-company').value.trim(),
+            orgNumber: isPrivate ? '' : document.getElementById('reg-orgnum').value.trim(),
+            orgForm: isPrivate ? '' : document.getElementById('reg-orgform').value.trim(),
+            address: isPrivate ? document.getElementById('reg-private-address').value.trim() : document.getElementById('reg-address').value.trim(),
+            privateName: isPrivate ? document.getElementById('reg-private-name').value.trim() : '',
+            contactName: document.getElementById('reg-contact-name').value.trim(),
+            contactPhone: document.getElementById('reg-contact-phone').value.trim(),
+            contactEmail: document.getElementById('reg-contact-email').value.trim(),
+            dateFlexible,
+            desiredDate: dateFlexible ? '' : document.getElementById('reg-date').value,
+            desiredTime: dateFlexible ? '' : document.getElementById('reg-time').value,
+            desiredEndTime: dateFlexible ? '' : document.getElementById('reg-time-end').value,
+            venueAddress: document.getElementById('reg-venue-address').value.trim(),
+            venueSize: document.getElementById('reg-venue-size').value,
+            venueInfo: document.getElementById('reg-venue').value.trim(),
+            guests: document.getElementById('reg-guests').value,
+            audience: document.getElementById('reg-audience').value.trim(),
+            wishes: document.getElementById('reg-wishes').value.trim(),
+            extraEvents: [],
+        };
+
+        document.querySelectorAll('.extra-event').forEach(ev => {
+            data.extraEvents.push({
+                date: ev.querySelector('.ee-date')?.value || '',
+                time: ev.querySelector('.ee-time')?.value || '',
+                endTime: ev.querySelector('.ee-time-end')?.value || '',
+                description: ev.querySelector('.ee-desc')?.value?.trim() || '',
+            });
+        });
+
+        return data;
+    }
+
+    function buildSummary() {
+        const d = gatherData();
+        const container = document.getElementById('summary-content');
+        const nameLabel = d.type === 'private' ? d.privateName : d.companyName;
+
+        let html = `
+        <div class="bg-dark-800 rounded-xl border border-dark-600 p-4">
+            <h3 class="text-sm font-semibold text-neon-blue mb-2">${d.type === 'private' ? 'Privatperson' : 'Firma'}</h3>
+            <div class="summary-row"><span class="summary-label">${d.type === 'private' ? 'Navn' : 'Firmanavn'}</span><span class="summary-value">${esc(nameLabel)}</span></div>
+            ${d.orgNumber ? `<div class="summary-row"><span class="summary-label">Org.nr</span><span class="summary-value">${esc(d.orgNumber)}</span></div>` : ''}
+            ${d.address ? `<div class="summary-row"><span class="summary-label">Adresse</span><span class="summary-value">${esc(d.address)}</span></div>` : ''}
+        </div>
+        <div class="bg-dark-800 rounded-xl border border-dark-600 p-4">
+            <h3 class="text-sm font-semibold text-neon-green mb-2">Kontaktperson</h3>
+            <div class="summary-row"><span class="summary-label">Navn</span><span class="summary-value">${esc(d.contactName)}</span></div>
+            <div class="summary-row"><span class="summary-label">Telefon</span><span class="summary-value">${esc(d.contactPhone)}</span></div>
+            <div class="summary-row"><span class="summary-label">E-post</span><span class="summary-value">${esc(d.contactEmail)}</span></div>
+        </div>
+        <div class="bg-dark-800 rounded-xl border border-dark-600 p-4">
+            <h3 class="text-sm font-semibold text-neon-pink mb-2">Arrangement</h3>
+            <div class="summary-row"><span class="summary-label">Dato</span><span class="summary-value">${d.dateFlexible ? 'Ikke bestemt' : (d.desiredDate || '—') + (d.desiredTime ? ' kl. ' + d.desiredTime : '') + (d.desiredEndTime ? ' – ' + d.desiredEndTime : '')}</span></div>
+            ${d.venueAddress ? `<div class="summary-row"><span class="summary-label">Adresse lokale</span><span class="summary-value">${esc(d.venueAddress)}</span></div>` : ''}
+            ${d.venueSize ? `<div class="summary-row"><span class="summary-label">Størrelse lokale</span><span class="summary-value">ca. ${d.venueSize} m²</span></div>` : ''}
+            ${d.guests ? `<div class="summary-row"><span class="summary-label">Antall gjester</span><span class="summary-value">${d.guests}</span></div>` : ''}
+            ${d.venueInfo ? `<div class="summary-row"><span class="summary-label">Om lokalet</span><span class="summary-value">${esc(d.venueInfo)}</span></div>` : ''}
+            ${d.audience ? `<div class="summary-row"><span class="summary-label">Målgruppe</span><span class="summary-value">${esc(d.audience)}</span></div>` : ''}
+            ${d.wishes ? `<div class="summary-row"><span class="summary-label">Ønsker</span><span class="summary-value">${esc(d.wishes)}</span></div>` : ''}
+        </div>`;
+
+        if (d.extraEvents.length > 0) {
+            html += `<div class="bg-dark-800 rounded-xl border border-neon-purple/30 p-4">
+                <h3 class="text-sm font-semibold text-neon-purple mb-2">Ekstra arrangementer (${d.extraEvents.length})</h3>
+                ${d.extraEvents.map((ev, i) => `
+                    <div class="border-b border-dark-600 pb-2 mb-2 last:border-0 last:mb-0 last:pb-0">
+                        <div class="text-xs text-gray-400">#${i + 1}</div>
+                        <div class="summary-row"><span class="summary-label">Dato</span><span class="summary-value">${ev.date || 'Ikke satt'}${ev.time ? ' kl. ' + ev.time : ''}${ev.endTime ? ' – ' + ev.endTime : ''}</span></div>
+                        ${ev.description ? `<div class="summary-row"><span class="summary-label">Beskrivelse</span><span class="summary-value">${esc(ev.description)}</span></div>` : ''}
+                    </div>
+                `).join('')}
+            </div>`;
+        }
+
+        container.innerHTML = html;
+    }
+
+    function submitForm() {
+        const data = gatherData();
+        const json = JSON.stringify(data);
+        const encoded = btoa(unescape(encodeURIComponent(json)));
+
+        const basePath = window.location.href.replace(/register\.html.*$/, '');
+        const importUrl = basePath + 'index.html?import=' + encoded;
+        window._importUrl = importUrl;
+
+        const nameLabel = data.type === 'private' ? data.privateName : data.companyName;
+        const dateStr = data.dateFlexible ? 'Ikke bestemt' : (data.desiredDate || 'Ikke satt');
+        const extraStr = data.extraEvents.length > 0 ? `\n\nEkstra arrangementer: ${data.extraEvents.length}` + data.extraEvents.map((e, i) => `\n  ${i + 1}. ${e.date || 'Dato ikke satt'} ${e.time || ''}${e.endTime ? ' – ' + e.endTime : ''} — ${e.description || ''}`).join('') : '';
+
+        const body = encodeURIComponent(
+            `Ny forespørsel fra: ${nameLabel}\n` +
+            (data.orgNumber ? `Org.nr: ${data.orgNumber}\n` : '') +
+            `\nKontaktperson: ${data.contactName}\nTelefon: ${data.contactPhone}\nE-post: ${data.contactEmail}\n` +
+            `\nØnsket dato: ${dateStr}${data.desiredTime ? ' kl. ' + data.desiredTime : ''}${data.desiredEndTime ? ' – ' + data.desiredEndTime : ''}` +
+            (data.venueAddress ? `\nAdresse lokale: ${data.venueAddress}` : '') +
+            (data.venueSize ? `\nStørrelse lokale: ca. ${data.venueSize} m²` : '') +
+            (data.guests ? `\nAntall gjester: ${data.guests}` : '') +
+            (data.venueInfo ? `\nOm lokalet: ${data.venueInfo}` : '') +
+            (data.audience ? `\nMålgruppe: ${data.audience}` : '') +
+            (data.wishes ? `\nØnsker: ${data.wishes}` : '') +
+            extraStr +
+            `\n\n---\nImport-link:\n${importUrl}`
+        );
+
+        document.getElementById('mailto-link').href = `mailto:?subject=${encodeURIComponent('Forespørsel: ' + nameLabel)}&body=${body}`;
+
+        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+        document.getElementById('progress-dots').classList.add('hidden');
+        document.getElementById('success-view').classList.remove('hidden');
+    }
+
+    function copyImportLink() {
+        if (window._importUrl) {
+            navigator.clipboard.writeText(window._importUrl).then(() => {
+                const fb = document.getElementById('copy-feedback');
+                fb.classList.remove('hidden');
+                setTimeout(() => fb.classList.add('hidden'), 2000);
+            });
+        }
+    }
+
+    function esc(str) {
+        if (!str) return '';
+        const d = document.createElement('div');
+        d.textContent = str;
+        return d.innerHTML;
+    }
+    </script>
+</body>
+</html>
